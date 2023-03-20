@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "bragi"
+version = "0.1.0"
+description = ""
+authors = ["Joe Hoover <joehoover88@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+phonemizer = "^3.2.1"
+poesy = {git = "https://github.com/quadrismegistus/poesy"}
+transformers = "^4.27.1"
+pronouncing = "^0.2.0"
+ray = "^2.3.0"
+
+
+[tool.poetry.group.dev.dependencies]
+jupyter = "^1.0.0"
+
+
+[tool.poetry.group.develop.dependencies]
+ipykernel = "^6.21.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
