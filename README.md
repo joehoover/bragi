@@ -8,6 +8,9 @@ The core functionality of `bragi` is provided via the `MetricGenerator` class. I
 
 The library also provides wrappers around various methods for extracting metric information, such as syllable counts and rhyme schemes.
 
+`MetricGenerator` controls the metric structure of generated output by constraining the model's probability distribution over tokens. Specifically, tokens that would violate the target metric structure are masked at each inference step. This is implemented via a custom logits warper. 
+
+
 # Dev setup
 
 1. You need to install `espeak`. 
