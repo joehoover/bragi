@@ -35,7 +35,7 @@ class MetricGenerator():
     ):
         
         _, syllable_budget = self.verse_handler.example(text_init)
-        
+
         if pt:
             syllable_budget = torch.Tensor(syllable_budget)
         
@@ -58,6 +58,9 @@ class MetricGenerator():
         
         if not text_init and not torch.is_tensor(syllable_budget):
             raise Error("You must provide either `syllable_budget` or `text_init`.")
+
+        if isinstance(syllable_budget, list):
+            syllable_budget = torch.Tensor(syllable_budget)
         
         if text_init:
             syllable_budget = self.calculate_syllable_budget(text_init)
@@ -90,9 +93,37 @@ class MetricGenerator():
         )
 
         outputs = outputs[:, input_ids.shape[1]:]
-        output = self.tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
-        output = self.postprocess(output, new_line_token)
-        return output
+
+        return outputs
+
 
     def postprocess(self, output, new_line_token):
         return output.replace(new_line_token, '\n').replace('\n ', '\n').strip()
+    
+    def __call__(
+        self, 
+        prompt, 
+        text_init: Optional[str] = None,
+        syllable_budget: Optional[torch.Tensor] = None, 
+        free_tokens: Optional[List] = ['\n', '!', ',', ':', '?', ';', ' ', '||'],
+        num_beams: Optional[int] = 1, 
+        return_full_text: bool = False,
+        new_line_token: str = '||',
+        **kwargs
+    ):
+
+        outputs = self.generate(
+            prompt = prompt,
+            text_init = text_init,
+            syllable_budget = syllable_budget,
+            free_tokens = free_tokens,
+            num_beams = num_beams,
+            return_full_text = return_full_text,
+            new_line_token = new_line_token,
+            **kwargs,
+        )
+
+        decoded_output = self.tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
+        decoded_output = self.postprocess(decoded_output, new_line_token)
+
+        return decoded_output
