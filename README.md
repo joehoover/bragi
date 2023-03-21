@@ -1,3 +1,13 @@
+# bragi
+
+## Generating metered verse with LLaMA
+
+This repo provides methods for using Meta's 6 billion parameter LLaMA model to generate song lyrics with a specific metric structure. If you've been yearning to rewrite the happy birthday song so that it's just about dogs, bragi can help :). 
+
+The core functionality of `bragi` is provided via the `MetricGenerator` class. If you're wondering, Bragi is the [Norse god](https://en.wikipedia.org/wiki/Bragi) of poetry!
+
+The library also provides wrappers around various methods for extracting metric information, such as syllable counts and rhyme schemes.
+
 # Dev setup
 
 1. You need to install `espeak`. 
