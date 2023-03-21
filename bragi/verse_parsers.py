@@ -1,5 +1,63 @@
-from typing import Optional
 import poesy
+import pronouncing
+import torch
+
+from typing import Optional
+
+
+def cmu_syllable_counter(word):
+    """
+    Returns inf for OOV tokens.
+    Note: This prohibits things like numbers and punctuation. Very naive and dumb.
+    """
+    pronunciation_list = pronouncing.phones_for_word(word)
+    if len(pronunciation_list) > 0:
+        syllable_count = pronouncing.syllable_count(pronunciation_list[0])
+    else:
+        return float("Inf")
+    
+    return syllable_count
+
+def syllable_mapper(vocab):
+    syllable_map = {}
+    for token, idx in vocab.items():
+        n_syllables = cmu_syllable_counter(token)
+        try:
+            syllable_map[n_syllables].append(idx)
+        except KeyError:
+            syllable_map[n_syllables] = [idx]
+    return syllable_map
+
+def token_syllable_scores(tokenizer, pt=True, free_tokens=['\n', '!', ',', ':', '?', ';', ' ', '||']):
+    """
+    Returns list or torch tensor of size==tokenizer.vocab_size where element i is the count of syllables
+    for token i.
+    """
+    sorted_vocab = {k: v for k, v in sorted(tokenizer.vocab.items(), key=lambda item: item[1])}
+    syllable_scores = []
+    for token, idx in sorted_vocab.items():
+
+        # Have to decode the vocab item to deal with special characters, e.g. '\n' is represented as 'Ċ'
+        
+   
+        decoded_token = tokenizer.decode(sorted_vocab[token])
+        if decoded_token != ' ':
+            decoded_token = decoded_token.strip()
+        if decoded_token not in free_tokens:
+            n_syllables = cmu_syllable_counter(decoded_token)
+        else:
+            n_syllables = 0
+
+        syllable_scores.append(n_syllables)
+    
+    # Scoring is wrong for '\n' patching
+    for token in free_tokens:
+        syllable_scores[tokenizer(token, add_special_tokens=False)['input_ids'][0]] = 0
+    
+    if pt:
+        return torch.Tensor(syllable_scores)
+    return syllable_scores
+
 
 class BaseParsedVerseHandler():
     """
