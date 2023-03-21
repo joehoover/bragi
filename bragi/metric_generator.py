@@ -55,6 +55,7 @@ class MetricGenerator():
         num_beams: Optional[int] = 1, 
         return_full_text: bool = False,
         new_line_token: str = '||',
+        tokens_to_include: List[str] = None,
         **kwargs
     ):
         """
@@ -89,6 +90,7 @@ class MetricGenerator():
                 prompt = prompt,
                 new_line_token = new_line_token,
                 device = self.device,
+                tokens_to_include=tokens_to_include,
             )
 
         )
@@ -121,6 +123,8 @@ class MetricGenerator():
         num_beams: Optional[int] = 1, 
         return_full_text: bool = False,
         new_line_token: str = '||',
+        tokens_to_include: List[str] = None,
+
         **kwargs
     ) -> str:
 
@@ -176,6 +180,7 @@ class MetricGenerator():
             num_beams = num_beams,
             return_full_text = return_full_text,
             new_line_token = new_line_token,
+            tokens_to_include=tokens_to_include,
             **kwargs,
         )
 

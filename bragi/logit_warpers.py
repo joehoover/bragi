@@ -1,6 +1,8 @@
 import torch
 import transformers 
 
+from typing import List
+
 from transformers.generation.logits_process import LogitsWarper
 
 # TODO
@@ -21,13 +23,15 @@ class SyllableRestrictionWarper(LogitsWarper):
         new_line_token = '\n',
         num_beams: int = 10,
         device: str = 'cuda',
+        tokens_to_include: List[str] = None,
+
     ):
 #         if not isinstance(syllable_budget, int) or syllable_budget < 0:
 #             raise ValueError(f"`syllable_budget` has to be a strictly positive or zero integer, but is {syllable_budget}")
 
         self.syllable_budget = syllable_budget.repeat(num_beams).to(device)
         self.filter_value = filter_value
-        self.syllable_scores = syllable_scorer(tokenizer, pt=True, free_tokens=free_tokens).to(device) #.repeat(num_beams, 1)
+        self.syllable_scores = syllable_scorer(tokenizer, pt=True, free_tokens=free_tokens, tokens_to_include=tokens_to_include).to(device) #.repeat(num_beams, 1)
         self.tokenizer = tokenizer
         self.new_line_token = new_line_token
         self.new_line_token_id = tokenizer(new_line_token, return_tensors='pt', add_special_tokens=False)['input_ids'].item()

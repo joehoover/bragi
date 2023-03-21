@@ -2,7 +2,7 @@ import poesy
 import pronouncing
 import torch
 
-from typing import Optional
+from typing import Optional, List
 
 
 def cmu_syllable_counter(word):
@@ -28,25 +28,59 @@ def syllable_mapper(vocab):
             syllable_map[n_syllables] = [idx]
     return syllable_map
 
-def token_syllable_scores(tokenizer, pt=True, free_tokens=['\n', '!', ',', ':', '?', ';', ' ', '||']):
+def token_syllable_scores(
+        tokenizer, 
+        pt: bool =True, 
+        free_tokens=['\n', '!', ',', ':', '?', ';', ' ', '||'],
+        tokens_to_include: List[str] = None,
+    ):
     """
     Returns list or torch tensor of size==tokenizer.vocab_size where element i is the count of syllables
     for token i.
+
+    Parameters:
+        tokenizer: Transformers.tokenizer
+            The tokenizer associated with your model.
+        pt: bool
+            If True, torch tensors will be turned. Otherwise a list will be returned.
+        free_tokens: List[str]
+            List of tokens that should cost zero syllables. Tokens that are OOV for the CMU
+            dictionary will be set to Inf cost. So, if, for example, you want to retain punctuation,
+            you need to specify that here.
+        tokens_to_include: List[str]
+            If tokens are specified here, then the syllable cost for any tokens *not* in this list
+            will be set to Inf. You can use this argument to constrain the model vocabulary.
     """
+
     sorted_vocab = {k: v for k, v in sorted(tokenizer.vocab.items(), key=lambda item: item[1])}
     syllable_scores = []
+
+    if tokens_to_include:
+        tokens_to_include = {t: None for t in tokens_to_include}
+
     for token, idx in sorted_vocab.items():
 
         # Have to decode the vocab item to deal with special characters, e.g. '\n' is represented as 'Ċ'
         
    
         decoded_token = tokenizer.decode(sorted_vocab[token])
+
         if decoded_token != ' ':
             decoded_token = decoded_token.strip()
-        if decoded_token not in free_tokens:
-            n_syllables = cmu_syllable_counter(decoded_token)
-        else:
+
+        if decoded_token in free_tokens:
             n_syllables = 0
+            
+        elif decoded_token not in free_tokens:
+            if not tokens_to_include:
+                n_syllables = cmu_syllable_counter(decoded_token)
+            else:
+                try:
+                    tokens_to_include[decoded_token.lower()]
+                    n_syllables = cmu_syllable_counter(decoded_token)
+
+                except KeyError:
+                    n_syllables = float("Inf")
 
         syllable_scores.append(n_syllables)
     
