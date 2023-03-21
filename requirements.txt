@@ -1,3 +1,4 @@
 phonemizer>=3.2.1
 git+https://github.com/quadrismegistus/poesy
 pronouncing>=0.2.0
+git+https://github.com/huggingface/transformers.git@c3dc391da81e6ed7efce42be06413725943b3920
