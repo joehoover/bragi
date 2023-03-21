@@ -104,6 +104,29 @@ class BaseParsedVerseHandler():
         raise NotImplementedError()
     
 class PoesyParsedVerseHandler(BaseParsedVerseHandler):
+    """
+    This class provides wrappers around various poesy methods. It can be used 
+    to calculate the syllabic structure of an input text as well as
+    format training data for fine-tuning with control codes. 
+
+    Example:
+
+        ```
+        from bragi.verse_parsers import PoesyParsedVerseHandler
+        verse_handler = PoesyParsedVerseHandler()
+
+        text = "An elderly man called Keith,\
+        Mislaid his set of false teeth.\
+        They'd been laid on a chair,\
+        He'd forgot they were there,\
+        Sat down, and was bitten beneath."
+
+        print(text)
+
+        example, syllable_budget = verse_handler.example(text)
+        print(f"\nThe lines of the limerick above have the following syllable counts: {syllable_budget}")
+        ```
+    """
 
     def __init__(self,):
 

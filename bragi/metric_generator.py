@@ -8,11 +8,16 @@ from .verse_parsers import PoesyParsedVerseHandler, token_syllable_scores
 from .logit_warpers import SyllableRestrictionWarper
 
 class MetricGenerator():
+    """
+    This class can be used to generate strings that adhere to a specific metric structure.
+    You need to provide an initialized model and tokenizer. 
+    Currently, only `gpt2` and `LLaMA` are tested.
+    """
     def __init__(
         self, 
         model, 
         tokenizer, 
-        syllable_scorer = token_syllable_scores,
+        syllable_scorer: callable = token_syllable_scores,
         device = 'cpu',
     ):
         self.model = model
@@ -52,6 +57,13 @@ class MetricGenerator():
         new_line_token: str = '||',
         **kwargs
     ):
+        """
+        This method injects the `SyllableRestrictionWarper` and returns token ids.
+        You can pass any standard `Transformers.model.generate()` methods.
+        However, you have to be careful with `new_line_token`. Under the current implementation, 
+        it needs to resolve to a single token. For LLaMA, you should use the default '||'. 
+        For GPT2, you can just set `new_line_token='\n'`.
+        """
         
         if text_init and syllable_budget:
             raise Error("You cannot specify both `syllable_budget` and `text_init`. Choose one or the other.")
@@ -110,7 +122,51 @@ class MetricGenerator():
         return_full_text: bool = False,
         new_line_token: str = '||',
         **kwargs
-    ):
+    ) -> str:
+
+        """
+        This method injects the `SyllableRestrictionWarper` and returns decoded token ids.
+        You can pass any standard `Transformers.model.generate()` methods.
+        However, you have to be careful with `new_line_token`. Under the current implementation, 
+        it needs to resolve to a single token. For LLaMA, you should use the default '||'. 
+        For GPT2, you can just set `new_line_token='\n'`.
+
+        Example:
+
+        ```
+
+        from bragi.metric_generator import MetricGenerator
+        from transformers import LLaMAForCausalLM, LLaMATokenizer
+        import torch 
+
+        device = ...
+        model = LLaMAForCausalLM.from_pretrained(...).to(device)
+        tokenizer = LLaMATokenizer.from_pretrained(...)
+        generator = MetricGenerator(model=model, tokenizer=tokenizer, device=device)
+
+        text_init = "Happy birthday to you,\nHappy birthday to you,\nHappy birthday dear Marvin,\nHappy birthday to you"
+        
+        torch.manual_seed(2)
+        output = generator(
+            prompt = prompt,
+            text_init = text_init,
+            free_tokens=['||', '?', '.', ','],
+            # syllable_budget = torch.Tensor([6., 6.]),
+            num_return_sequences=1,
+            no_repeat_ngram_size=2,
+            remove_invalid_values=True,
+            do_sample=True,
+            top_k=25,
+            temperature=.7,
+            max_length = 100,
+            new_line_token='||',
+            bad_words_ids=[[8876]],
+        )
+
+        assert output == 'I love how the dogs can \nbe so good, so bad, and \nso strange. Sometimes I love them \nwhen they are the most good'
+        ```
+        """
+        
 
         outputs = self.generate(
             prompt = prompt,
