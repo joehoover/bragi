@@ -14,7 +14,8 @@ pip3 install torch
 ## Linux
 
 ```
-apt-get install espeak
+apt-get update -y
+apt-get install espeak -y
 ```
 
 ## Notes
