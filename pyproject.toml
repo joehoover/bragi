@@ -14,13 +14,15 @@ dependencies = [
     "packaging", 
     "pydantic>1", 
     "requests>2", 
-    "pyyaml", 
+    "pyyaml",
     "google-cloud-storage", 
     "typer",
     "torch",
     "phonemizer>=3.2.1",
     "transformers>=4.27.1",
-    "pronouncing>=0.2.0"]
+    "pronouncing>=0.2.0",
+    "poesy @ git+https://github.com/quadrismegistus/poesy",
+]
 
 
 [tool.setuptools.packages]
