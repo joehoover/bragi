@@ -18,11 +18,9 @@ dependencies = [
     "google-cloud-storage", 
     "typer",
     "torch",
-    "phonemizer=^3.2.1",
-    "transformers=^4.27.1",
-    "pronouncing=^0.2.0
-]
-
+    "phonemizer>=3.2.1",
+    "transformers>=4.27.1",
+    "pronouncing>=0.2.0"]
 
 
 [tool.setuptools.packages]
