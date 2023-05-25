@@ -67,10 +67,10 @@ class MetricGenerator():
         """
         
         if text_init and syllable_budget:
-            raise Error("You cannot specify both `syllable_budget` and `text_init`. Choose one or the other.")
+            raise ValueError("You cannot specify both `syllable_budget` and `text_init`. Choose one or the other.")
         
         if not text_init and not torch.is_tensor(syllable_budget):
-            raise Error("You must provide either `syllable_budget` or `text_init`.")
+            raise ValueError("You must provide either `syllable_budget` or `text_init`.")
 
         if isinstance(syllable_budget, list):
             syllable_budget = torch.Tensor(syllable_budget)
