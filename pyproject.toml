@@ -1,25 +1,48 @@
-[tool.poetry]
-name = "bragi"
-version = "0.1.0"
-description = ""
-authors = ["Joe Hoover <joehoover88@gmail.com>"]
-readme = "README.md"
-
-[tool.poetry.dependencies]
-python = "^3.9"
-phonemizer = "^3.2.1"
-poesy = {git = "https://github.com/quadrismegistus/poesy"}
-transformers = {git = "git+https://github.com/huggingface/transformers.git@c3dc391da81e6ed7efce42be06413725943b3920"}
-pronouncing = "^0.2.0"
-
-
-[tool.poetry.group.dev.dependencies]
-jupyter = "^1.0.0"
-
-
-[tool.poetry.group.develop.dependencies]
-ipykernel = "^6.21.3"
-
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bragi"
+version = "0.0.1"
+description = "Turn your LLM into a poet with token interventions"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [{ name = "Joe Hoover" }]
+requires-python = ">=3.8"
+dependencies = [
+    "packaging", 
+    "pydantic>1", 
+    "requests>2", 
+    "pyyaml", 
+    "google-cloud-storage", 
+    "typer",
+    "torch",
+    "phonemizer=^3.2.1",
+    "transformers=^4.27.1",
+    "pronouncing=^0.2.0
+]
+
+
+
+[tool.setuptools.packages]
+find = {}
+
+[project.optional-dependencies]
+transformers = ['transformers']
+dev = [
+    "black",
+    "mypy",
+    "pytest",
+    "responses",
+    "ruff",
+    "huggingface_hub",
+]
+
+
+[project.urls]
+homepage = "https://replicate.com"
+repository = "https://github.com/joehoover/bragi"
+
+[tool.pytest.ini_options]
+testpaths = "tests/"
