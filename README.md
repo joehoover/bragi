@@ -44,7 +44,7 @@ cog run apt-get install espeak -y
 5. exec into the container cog build
 
 ```
-cog run exec
+cog run bash
 ```
 
 6. Clone this repo into the cog container
